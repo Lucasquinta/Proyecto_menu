@@ -1,29 +1,72 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import './App.css';
+import './cart.css';
+import MenuItem from './MenuItem';
+import CartPage from './CartPage';
+import CheckoutPage from './CheckoutPage';
+import Thanks from './Thanks';
 
 const menuItems = [
   {
     id: 1,
-    title: 'Pizza',
-    description: 'Delicious pizza with various toppings',
-    price: 10.99,
+    title: 'Hamburguesa',
+    description: 'Una hamburguesa típica.',
+    price: 12.99,
   },
   {
     id: 2,
-    title: 'Burger',
-    description: 'Juicy burger with cheese and veggies',
-    price: 8.99,
+    title: 'Papas fritas',
+    description: 'Unas ricas papas fritas en aceite de girasol.',
+    price: 15.99,
   },
   {
     id: 3,
-    title: 'Salad',
-    description: 'Fresh salad with mixed greens and dressing',
-    price: 6.99,
+    title: 'Pizza',
+    description: 'Tomate y queso.',
+    price: 19.99,
   },
+  {
+    id: 4,
+    title: 'Coca-Cola',
+    description: 'Gaseosa típica.',
+    price: 14.99,
+  },
+  {
+    id: 5,
+    title: 'Fanta',
+    description: 'Gaseosa comun.',
+    price: 14.99,
+  },
+  {
+    id: 6,
+    title: 'Sprite',
+    description: 'Gaseosa normal.',
+    price: 14.99,
+  },
+  {
+    id: 7,
+    title: 'Helado',
+    description: 'Limon, dulce de leche, tramontana.',
+    price: 24.99,
+  },
+  {
+    id: 8,
+    title: 'Yogurt',
+    description: 'Vainilla, frutilla.',
+    price: 18.99,
+  },
+  {
+    id: 9,
+    title: 'Fruta',
+    description: 'Manzana, naranja, mandarina.',
+    price: 8.99,
+  }  
 ];
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
+  const [addedToCartMessage, setAddedToCartMessage] = useState('');
 
   useEffect(() => {
     const storedCartItems = localStorage.getItem('cartItems');
@@ -31,48 +74,92 @@ function App() {
       setCartItems(JSON.parse(storedCartItems));
     }
   }, []);
-  function MenuItem({ item, addToCart }) {
-    const { title, description, price } = item;
-  
-    const handleAddToCart = () => {
-      addToCart(item);
-    };
-  
-    return (
-      <div className="menu-item">
-        <h3>{title}</h3>
-        <p>{description}</p>
-        <p className="price">${price.toFixed(2)}</p>
-        <button onClick={()=>handleAddToCart(id)}>Add to Cart</button>
-      </div>
-    );
-  }
+
   const addToCart = (id) => {
-    const ids = id;
-    const item = menuItems.find(m=>m.id===ids);
-    const newItem = item.title ;
-    const updatedCartItems = [...cartItems, newItem];
-    setCartItems(updatedCartItems);
-    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    const item = menuItems.find((m) => m.id === id);
+
+    if (cartItems.some((cartItem) => cartItem.id === id)) {
+      setAddedToCartMessage(
+        <div className="added-to-cart-message">
+          <strong>{item.title}</strong> ya está en el carrito
+        </div>
+      );
+    } else {
+      const updatedCartItems = [...cartItems, item];
+      setCartItems(updatedCartItems);
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      setAddedToCartMessage(
+        <div className="added-to-cart-message">
+          <strong>{item.title}</strong> se ha añadido al carrito
+        </div>
+      );
+    }
+
+    setTimeout(() => {
+      setAddedToCartMessage('');
+    }, 1500);
   };
-  useEffect (()=>{
-    const carrito = localStorage.getItem("carItem");
-    console.log(carrito);
-  })
+
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem('cartItems');
+  };
+
+  const removeFromCart = (itemId) => {
+    const index = cartItems.findIndex((item) => item.id === itemId);
+
+    if (index !== -1) {
+      const updatedCartItems = [...cartItems];
+      updatedCartItems.splice(index, 1);
+      setCartItems(updatedCartItems);
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    }
+  };
 
   return (
-    <div className="App">
-      <h1>Restaurant Menu</h1>
-      <div className="menu">
-        {menuItems.map((item) => (
-          <MenuItem
-            key={item.id}
-            item={item}
-            addToCart={addToCart}
+    <Router>
+      <div>
+        <div className="header">
+          <h1 className="App">Tito Calderon Burgas</h1>
+          <div className="cart-icon">
+            <Link to="/cart">
+              <img src="/carrito.png" alt="Carrito" title="Carrito" style={{ width: '100px', height: '100px' }} />
+            </Link>
+          </div>
+        </div>
+        <div className="message-container">
+          {addedToCartMessage && <div className="added-to-cart-message">{addedToCartMessage}</div>}
+        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <div className="menu">
+                  {menuItems.map((item) => (
+                    <MenuItem key={item.id} item={item} addToCart={addToCart} />
+                  ))}
+                </div>
+              </div>
+            }
           />
-        ))}
+          <Route
+            path="/cart"
+            element={
+              <CartPage cartItems={cartItems} clearCart={clearCart} removeFromCart={removeFromCart} />
+            }
+          />
+          <Route
+            path="/CheckoutPage"
+            element={<CheckoutPage clearCart={clearCart} />}
+          />
+          <Route
+            path="/Thanks.jsx"
+            element={<Thanks />}
+          />
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
 
