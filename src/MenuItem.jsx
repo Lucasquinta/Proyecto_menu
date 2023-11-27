@@ -1,18 +1,20 @@
+// MenuItem.jsx
 import React from 'react';
 
+
 function MenuItem({ item, addToCart }) {
-  const { title, description, price } = item;
+  const { id, title, description, price } = item;
 
   const handleAddToCart = () => {
-    addToCart(item);
+    addToCart(id);
   };
 
   return (
     <div className="menu-item">
       <h3>{title}</h3>
-      <p>{description}</p>
-      <p className="price">${price.toFixed(2)}</p>
-      <button onClick={()=>handleAddToCart(id)}>Add to Cart</button>
+      <p className="desc">{description}</p>
+      <p className="price">${typeof price === 'number' ? price.toFixed(2) : price}</p>
+      <button className="items" onClick={handleAddToCart}>Add to Cart</button>
     </div>
   );
 }

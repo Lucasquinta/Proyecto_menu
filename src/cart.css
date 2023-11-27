@@ -1,0 +1,47 @@
+.carrito {
+  margin-top: 50px;
+  padding: 20px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Estilo para los enlaces */
+a {
+  color: #cb4c08;
+  font-size: 30px;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #6b2906;
+}
+
+.cart-item {
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #0a0a12;
+}
+
+button.clear-cart {
+  color: #0a0a12;
+}
+
+button.clear-cart:hover {
+  color: #fff;
+}
+
+
+.quantity-container {
+  margin: 0 10px 0;
+}
+
+.quantity-container select {
+  margin-left: 5px;
+}
+
